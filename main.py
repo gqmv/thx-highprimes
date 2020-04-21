@@ -1,67 +1,68 @@
 import math
 
-known_primes = [2,3,5]
-
-def is_highprime(n):
-    fator = math.sqrt(n)
-    if fator % 1 != 0:
-        return False
-    else:
-        return is_prime(fator)
-
-
-def is_prime(fator):
-    fator = int(fator)
-    # Corner cases
-    if (fator <= 1):
-        return False
-    if (fator <= 3):
-        return True
-    if fator < 5:
-        return False
-    if fator % 5 == 0:
-        return False
-
-
-    for prime in known_primes:
-        if prime*prime > fator:
-            known_primes.append(fator)
-            # print (f'True {prime}, {fator}, {known_primes}')
-            return True
-        if fator % prime == 0:
-            # print(f'False {prime}, {fator}, {known_primes}')
-            return False
-
-
-
-    i = known_primes[-1] + 6
-    # print (f'Prime not known {i}, {fator}, {known_primes}')
-
-
-    while (i * i <= fator):
-        if (fator % i == 0 or fator % (i + 2) == 0):
-
-            return False
-        i = i + 6
-
-    known_primes.append(fator)
-    return True
-
-
-def qtd_highprimes(low,high):
+def qtd_highprimes(low,high, primes, squares):
     qtd = 0
-    for i in range(low,high + 1):
-        # print(i)
-        if is_highprime(i):
-            qtd +=1
+    for i in squares:
+        if i >= low and i<=high:
+            fator = math.floor(math.sqrt(i))
+            qtd += int(primes[fator])
     return qtd
 
-num_casos = int(input())
+def squares(n):
+    sq = []
+    i = 1
+    inc = 3
+    while i<= n:
+        sq.append(i)
+        i += inc
+        inc += 2
+    return sq
 
-for _ in range(num_casos):
-    low, high = input().split()
-    low = int(low)
-    high = int(high)
 
-    qtd = qtd_highprimes(low,high)
-    print(qtd)
+def sieve(n):
+    # Create a boolean array "prime[0..n]" and initialize
+    # all entries it as true. A value in prime[i] will
+    # finally be false if i is Not a prime, else true.
+    prime = [True for i in range(n + 1)]
+    p = 2
+    while (p * p <= n):
+
+        # If prime[p] is not changed, then it is a prime
+        if (prime[p] == True):
+
+            # Update all multiples of p
+            for i in range(p * 2, n + 1, p):
+                prime[i] = False
+        p += 1
+    prime[0] = False
+    prime[1] = False
+
+    return prime
+
+# if __name__ == "__main__":
+#
+#
+#     n = 10000000
+#     primes = sieve(math.isqrt(n))
+#     squares = squares(n)
+#     print (squares)
+#     print(qtd_highprimes(1,n,primes, squares))
+
+cases = int(input())
+mins = []
+maxs = []
+
+for i in range(cases):
+    m, M = input().split()
+    mins.append(int(m))
+    maxs.append(int(M))
+
+n = max(maxs)
+fator = math.floor(math.sqrt(n))
+
+primes = sieve(fator)
+squares = squares(n)
+
+for m, M in zip(mins, maxs):
+    print (qtd_highprimes(m, M, primes, squares))
+
